@@ -1,8 +1,8 @@
-# 32Blit Boilerplate
+# Game template
 
 ![Build](https://github.com/chili-chip/32blit-boilerplate/workflows/Build/badge.svg)
 
-This is a basic template for starting 32blit projects. It shows the basic
+This is a basic template for starting game projects for VGC Zero, using 32blit sdk. It shows the basic
 code layout and asset pipeline, hopefully giving folk a starting point for
 any new projects.
 
