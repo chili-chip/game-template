@@ -1,8 +1,23 @@
 # Basic parameters; check that these match your project / environment
 cmake_minimum_required(VERSION 3.10)
 
+# == DO NOT EDIT THE FOLLOWING LINES for the Raspberry Pi Pico VS Code Extension to work ==
+if(WIN32)
+    set(USERHOME $ENV{USERPROFILE})
+else()
+    set(USERHOME $ENV{HOME})
+endif()
+set(sdkVersion 2.2.0)
+set(toolchainVersion 14_2_Rel1)
+set(picotoolVersion 2.2.0-a4)
+set(picoVscode ${USERHOME}/.pico-sdk/cmake/pico-vscode.cmake)
+if (EXISTS ${picoVscode})
+    include(${picoVscode})
+endif()
+# ====================================================================================
+
 # Replace "game" with a name for your project (this is used the name of the output)
-project(game)
+project(game C CXX ASM)
 
 # Add your sources here (adding headers is optional, but helps some CMake generators)
 set(PROJECT_SOURCE game.cpp game.hpp)
@@ -22,6 +37,10 @@ find_package (32BLIT CONFIG REQUIRED PATHS ../32blit-sdk $ENV{PATH_32BLIT_SDK})
 blit_executable (${PROJECT_NAME} ${PROJECT_SOURCE})
 blit_assets_yaml (${PROJECT_NAME} assets.yml)
 blit_metadata (${PROJECT_NAME} metadata.yml)
+# Fix for picotool requiring .elf extension on first build
+if(PICO_BOARD)
+  set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".elf")
+endif()
 add_custom_target (flash DEPENDS ${PROJECT_NAME}.flash)
 
 # setup release packages
