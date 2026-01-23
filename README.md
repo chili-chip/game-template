@@ -43,3 +43,18 @@ cmake .. \
 
 Platform/Editor specific insctuctions [can be found in the fork of the main 32blit repo](https://github.com/chili-chip/32blit-sdk/blob/master/docs/vgc.md)
 (For Visual Studio, you should follow the "Option 2" instructions, as the boilerplate does not contain a solution file)
+
+## Flashing to Pico via SWD
+
+Make sure you have:
+- raspberrypi's [openocd fork ](https://github.com/raspberrypi/openocd) installed (rp2350 support not yet in openocd) 
+- Pico Debugger or Picoprobe connected via SWD pins (SWDIO, SWCLK, GND)
+- The game has been built successfully (produces `game.elf`)
+
+
+To flash the built executable to your Raspberry Pi Pico using the Pico Debugger over SWD:
+
+```bash
+cd build
+openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 5000; program "game.elf" verify reset exit"
+```
