@@ -44,6 +44,14 @@ cmake .. \
 Platform/Editor specific insctuctions [can be found in the fork of the main 32blit repo](https://github.com/chili-chip/32blit-sdk/blob/master/docs/vgc.md)
 (For Visual Studio, you should follow the "Option 2" instructions, as the boilerplate does not contain a solution file)
 
+## VS Code Setup (Optional but Recommended)
+
+For the best development experience with VS Code, install these extensions:
+- **CMake Tools** - For building and configuring the project with CMake
+- **Cortex-Debug** - For debugging on the Pico 2 with OpenOCD
+
+These extensions enable integrated building, flashing, and debugging directly from VS Code.
+
 ## Flashing to Pico via SWD
 
 Make sure you have:

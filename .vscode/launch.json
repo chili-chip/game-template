@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Pico 2 (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/out/build/vgc/game.elf",
+            "device": "RP2350",
+            "interface": "swd",
+            "configFiles": [
+                "interface/cmsis-dap.cfg",
+                "target/rp2350.cfg"
+            ],
+            "gdbPath": "gdb-multiarch",
+            "preLaunchTask": "Build + Flash Pico 2",
+            "runToEntryPoint": "main",
+            "openOCDLaunchCommands": [
+                "adapter speed 5000"
+            ],
+        }
+    ]
+}
