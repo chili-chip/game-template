@@ -20,7 +20,13 @@ endif()
 find_package (32BLIT CONFIG REQUIRED PATHS ../32blit-sdk $ENV{PATH_32BLIT_SDK})
 
 blit_executable (${PROJECT_NAME} ${PROJECT_SOURCE})
-set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".elf")
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+  set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
+else()
+  set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".elf")
+endif()
+
 blit_assets_yaml (${PROJECT_NAME} assets.yml)
 blit_metadata (${PROJECT_NAME} metadata.yml)
 add_custom_target (flash DEPENDS ${PROJECT_NAME}.flash)
