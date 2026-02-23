@@ -3,7 +3,7 @@
     "configurePresets": [
         {
             "name": "vgc",
-            "displayName": "GCC 14.2.1 arm-none-eabi",
+            "displayName": "vgc",
             "description": "Using compilers: C = /usr/bin/arm-none-eabi-gcc, CXX = /usr/bin/arm-none-eabi-g++",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "cacheVariables": {
@@ -19,7 +19,7 @@
         },
         {
             "name": "linux",
-            "displayName": "GCC 14.2.0 x86_64-linux-gnu",
+            "displayName": "linux",
             "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/g++",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "cacheVariables": {
