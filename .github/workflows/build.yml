@@ -108,7 +108,7 @@ jobs:
         run: |
           brew install ${{matrix.brew-packages}}
           pipx install 32blit
-          pipx inject 32blit "bitstring<5"
+          pipx inject --force 32blit "bitstring<5"
 
       - name: Install Windows deps
         if: runner.os == 'Windows'
