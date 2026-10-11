@@ -1,6 +1,6 @@
 # Game template
 
-![Build](https://github.com/chili-chip/32blit-boilerplate/workflows/Build/badge.svg)
+[![Build](https://github.com/chili-chip/game-template/actions/workflows/build.yml/badge.svg)](https://github.com/chili-chip/game-template/actions/workflows/build.yml)
 
 This is a basic template for starting game projects for VGC Zero, using 32blit sdk. It shows the basic
 code layout and asset pipeline, hopefully giving folk a starting point for
@@ -11,7 +11,7 @@ It's based on the original `template` project from the
 
 ## Usage
 
-[Use this template](https://github.com/chili-chip/32blit-boilerplate/generate) to
+[Use this template](https://github.com/chili-chip/game-template/generate) to
 generate your own project.
 
 * Edit the CMakeList.txt file to set the name of your project
