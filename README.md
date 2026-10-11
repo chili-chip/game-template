@@ -39,6 +39,11 @@ cmake .. \
   -DPICO_PLATFORM=rp2350-arm-s \
   -DCMAKE_TOOLCHAIN_FILE=../../32blit-sdk/pico2.toolchain
 ```
+To build an installable `.blit` for the VGC Zero loader instead of a standalone `.uf2`, add
+`-DBLIT_EXECUTABLE_PICO_BLIT=1` to the vgc cmake command (or use the `vgc-blit` preset), then install it over USB with
+`32blit install game.blit`. The console needs the loader flashed first; see the
+[loader instructions](https://github.com/chili-chip/32blit-sdk/blob/master/docs/vgc.md#loader-and-blit-games-os-preview).
+
 [detailed instructions for vgc](https://github.com/chili-chip/32blit-sdk/blob/master/docs/vgc.md)
 
 Platform/Editor specific insctuctions [can be found in the fork of the main 32blit repo](https://github.com/chili-chip/32blit-sdk/blob/master/docs/vgc.md)
