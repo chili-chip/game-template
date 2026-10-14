@@ -77,6 +77,15 @@ game's info page, and the `splash` image as the game's cover in the carousel. Ma
 without one the game gets a coloured title card. Keep `category: game` (a `launcher` replaces the home
 screen).
 
+### Saving progress
+
+`game.cpp` shows how to save: `read_save()` loads a struct in `init()`, and `blit::on_quit` writes it
+with `write_save()` when the player quits to the home screen (from the system menu or by holding HOME).
+Saves live in `.blit/<title>/` on the console's drive, so they are kept when the game is updated, and
+deleting the game from the home screen asks whether to delete them too. The console has a hard power
+switch, so also save at checkpoints rather than only on quit. `on_quit` needs a console with the API 0.5
+loader.
+
 ### Standalone builds
 
 The `vgc` preset (the same cmake command without `-DBLIT_EXECUTABLE_PICO_BLIT=1`) builds a standalone
