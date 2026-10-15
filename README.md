@@ -6,6 +6,10 @@ This is a basic template for starting game projects for VGC Zero, using 32blit s
 code layout and asset pipeline, hopefully giving folk a starting point for
 any new projects.
 
+**Documentation:** tutorials, example games and the API reference are at
+<https://chili-chip.github.io/32blit-sdk/>. New to the SDK? Start with
+[Getting started](https://chili-chip.github.io/32blit-sdk/getting-started/).
+
 It's based on the original `template` project from the 
 [32blit-boilerplate](https://github.com/32blit/32blit-boilerplate), with added support for chilichip's vgc zero.
 
@@ -65,8 +69,8 @@ make
 
 Copying a newer build of the same game replaces the old one and keeps its saves. `32blit install game.blit`
 over USB still works too. If the console says "Needs a system update", the game was built against a newer
-SDK than the console's loader: flash the latest `blit-loader.uf2` (see the
-[loader instructions](https://github.com/chili-chip/32blit-sdk/blob/master/docs/vgc.md#loader-and-blit-games-os-preview)).
+SDK than the console's loader: flash the latest loader (see
+[Flashing](https://chili-chip.github.io/32blit-sdk/console/flashing/)).
 "Not a ChiliChip game" means the file was built for another device, usually because `PICO_PLATFORM` was
 not `rp2350-arm-s`.
 
@@ -98,10 +102,11 @@ Every push builds the game for each platform. The VGC jobs upload `game-blit` (r
 console) and `game-uf2` as workflow artifacts, and check that the `.blit` is built for the VGC Zero.
 Publishing a GitHub release also attaches `game.blit` to it.
 
-[Detailed instructions for the VGC Zero](https://github.com/chili-chip/32blit-sdk/blob/master/docs/vgc.md)
+[Detailed instructions for the VGC Zero](https://chili-chip.github.io/32blit-sdk/getting-started/build-console/)
 
-Platform/Editor specific instructions [can be found in the fork of the main 32blit repo](https://github.com/chili-chip/32blit-sdk/blob/master/docs/vgc.md)
-(For Visual Studio, you should follow the "Option 2" instructions, as the boilerplate does not contain a solution file)
+Platform and editor specific instructions are in the
+[Setup section of the docs](https://chili-chip.github.io/32blit-sdk/setup/linux/)
+(for [Visual Studio](https://chili-chip.github.io/32blit-sdk/setup/visual-studio/), follow the "Option 2" instructions, as the template does not contain a solution file)
 
 ## VS Code Setup (Optional but Recommended)
 
