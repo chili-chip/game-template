@@ -7,8 +7,8 @@ code layout and asset pipeline, hopefully giving folk a starting point for
 any new projects.
 
 **Documentation:** tutorials, example games and the API reference are at
-<https://chili-chip.github.io/32blit-sdk/>. New to the SDK? Start with
-[Getting started](https://chili-chip.github.io/32blit-sdk/getting-started/).
+<https://sdk.chilichip.eu/>. New to the SDK? Start with
+[Getting started](https://sdk.chilichip.eu/getting-started/).
 
 It's based on the original `template` project from the 
 [32blit-boilerplate](https://github.com/32blit/32blit-boilerplate), with added support for chilichip's vgc zero.
@@ -70,7 +70,7 @@ make
 Copying a newer build of the same game replaces the old one and keeps its saves. `32blit install game.blit`
 over USB still works too. If the console says "Needs a system update", the game was built against a newer
 SDK than the console's loader: flash the latest loader (see
-[Flashing](https://chili-chip.github.io/32blit-sdk/console/flashing/)).
+[Flashing](https://sdk.chilichip.eu/console/flashing/)).
 "Not a ChiliChip game" means the file was built for another device, usually because `PICO_PLATFORM` was
 not `rp2350-arm-s`.
 
@@ -102,11 +102,11 @@ Every push builds the game for each platform. The VGC jobs upload `game-blit` (r
 console) and `game-uf2` as workflow artifacts, and check that the `.blit` is built for the VGC Zero.
 Publishing a GitHub release also attaches `game.blit` to it.
 
-[Detailed instructions for the VGC Zero](https://chili-chip.github.io/32blit-sdk/getting-started/build-console/)
+[Detailed instructions for the VGC Zero](https://sdk.chilichip.eu/getting-started/build-console/)
 
 Platform and editor specific instructions are in the
-[Setup section of the docs](https://chili-chip.github.io/32blit-sdk/setup/linux/)
-(for [Visual Studio](https://chili-chip.github.io/32blit-sdk/setup/visual-studio/), follow the "Option 2" instructions, as the template does not contain a solution file)
+[Setup section of the docs](https://sdk.chilichip.eu/setup/linux/)
+(for [Visual Studio](https://sdk.chilichip.eu/setup/visual-studio/), follow the "Option 2" instructions, as the template does not contain a solution file)
 
 ## VS Code Setup (Optional but Recommended)
 
