@@ -133,7 +133,14 @@ jobs:
 
       - name: Pre-build Emscripten ports
         if: matrix.name == 'Emscripten'
-        run: embuilder.py build sdl2 sdl2-image-jpg sdl2-net
+        # GitHub archive downloads sometimes come back broken, so retry.
+        # Ports that already built stay in the cache between tries.
+        run: |
+          for i in 1 2 3 4; do
+            embuilder.py build sdl2 sdl2-image-jpg sdl2-net && exit 0
+            sleep 30
+          done
+          exit 1
 
       - name: Create Build Environment
         run: cmake -E make_directory ${{runner.workspace}}/main/build
