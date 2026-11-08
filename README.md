@@ -2,9 +2,11 @@
 
 [![Build](https://github.com/chili-chip/game-template/actions/workflows/build.yml/badge.svg)](https://github.com/chili-chip/game-template/actions/workflows/build.yml)
 
-This is a basic template for starting game projects for VGC Zero, using 32blit sdk. It shows the basic
-code layout and asset pipeline, hopefully giving folk a starting point for
-any new projects.
+This is a basic template for starting game projects for the chilichip console, using the 32blit SDK and the
+[chili game SDK](https://game-sdk.chilichip.eu/). It shows the code layout and asset pipeline, and comes with a
+title menu, a pause menu and a save file, so a new game starts from something that already works.
+
+![The template's title menu, play screen and pause menu](.github/screens.png)
 
 **Documentation:** tutorials, example games and the API reference are at
 <https://sdk.chilichip.eu/>. New to the SDK? Start with
@@ -26,6 +28,7 @@ generate your own project.
 
 * Edit the CMakeList.txt file to set the name of your project
 * Edit the metadata.yml file to set the information for your project
+* Edit `game.cpp`: set your own save id (the four letters in `save(...)`) and replace the play scene with your game
 * Edit the LICENSE file to set your name on the license
 * Write lots of super cool code!
 
@@ -87,14 +90,34 @@ game's info page, and the `splash` image as the game's cover in the carousel. Ma
 without one the game gets a coloured title card. Keep `category: game` (a `launcher` replaces the home
 screen).
 
+### What is in game.cpp
+
+`game.cpp` uses the [chili game SDK](https://game-sdk.chilichip.eu/), which CMake downloads with
+`FetchContent` on the first configure. Each part is short, so you can keep what you need:
+
+| Part | What it does | SDK docs |
+| --- | --- | --- |
+| `Title` scene | A menu with PLAY and a SOUND toggle | [Menu](https://game-sdk.chilichip.eu/menu/) |
+| `Play` scene | Counts presses of A. MENU opens a pause menu with RESUME and QUIT | [Scenes](https://game-sdk.chilichip.eu/scenes/) |
+| `save` | Keeps the press count and the sound setting | [Save](https://game-sdk.chilichip.eu/save/) |
+| `sfx_blip` | The menu and button sound | [Music and sound](https://game-sdk.chilichip.eu/audio/) |
+
+The SDK also has name entry, high score tables, music, particles and screen shake. See the
+[demo game](https://game-sdk.chilichip.eu/demo/) for all of them in one file.
+
+The SDK version is pinned with `GIT_TAG` in `CMakeLists.txt`, so a new SDK release never changes your game until you
+bump it.
+
 ### Saving progress
 
-`game.cpp` shows how to save: `read_save()` loads a struct in `init()`, and `blit::on_quit` writes it
-with `write_save()` when the player quits to the home screen (from the system menu or by holding HOME).
-Saves live in `.blit/<title>/` on the console's drive, so they are kept when the game is updated, and
-deleting the game from the home screen asks whether to delete them too. The console has a hard power
-switch, so also save at checkpoints rather than only on quit. `on_quit` needs a console with the API 0.5
-loader.
+`chili::Save<SaveData>` keeps a plain struct in a file. `init()` calls `save.load()`, which gives the defaults when
+there is no save yet, and `save.store_on_quit()`, which writes it when the player quits to the home screen (from
+the system menu or by holding HOME). Quitting from the pause menu also saves.
+
+Saves live in `.blit/<title>/` on the console's drive, so they are kept when the game is updated, and deleting the
+game from the home screen asks whether to delete them too. The console has a hard power switch, so also save at
+checkpoints rather than only on quit. When you change `SaveData`, bump the version number in `save(...)`: an
+older file then loads as defaults instead of as garbage. `on_quit` needs a console with the API 0.5 loader.
 
 ### Standalone builds
 

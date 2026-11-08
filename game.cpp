@@ -1,26 +1,132 @@
+// A starting point for a chilichip console game. It has a title menu, a play
+// screen with a pause menu, and a save file. Replace the play scene with your
+// game. The chili game SDK docs: https://game-sdk.chilichip.eu/
+
 #include "game.hpp"
 
+#include "chili/audio.hpp"
+#include "chili/fx.hpp"
+#include "chili/menu.hpp"
+#include "chili/save.hpp"
+#include "chili/scene.hpp"
+
+#include <string>
+
 using namespace blit;
+namespace audio = chili::audio;
+namespace fx = chili::fx;
 
 ///////////////////////////////////////////////////////////////////////////
 //
 // saving progress
 //
-// write_save/read_save store a struct in a file named after the game's
-// title (on the VGC Zero: .blit/<title>/ on its USB drive, kept when the
-// game is updated)
+// Save<T> stores a plain struct in a file named after the game's title (on
+// the console: .blit/<title>/ on its USB drive, kept when the game is
+// updated). Change the first number to your own four letters, and bump the
+// version when you change SaveData: an old file then loads as defaults.
 //
 struct SaveData {
     uint32_t presses = 0;
+    bool sound = true;
 };
 
-static SaveData save_data;
+static chili::Save<SaveData> save(0x454d4147, 1);  // "GAME"
 
-// called when the player quits the game, from the system menu or by holding
-// HOME on the VGC Zero, or by closing the window on desktop
-static void save_progress() {
-    write_save(save_data);
+///////////////////////////////////////////////////////////////////////////
+//
+// sound
+//
+static const audio::Sfx sfx_blip = {audio::SFX1, Waveform::SQUARE, 0x3000, 0x7fff, 40, 1, {{880, 40}}};
+
+static void ui_sound(chili::UiSound) {
+    audio::play_sfx(sfx_blip);
 }
+
+///////////////////////////////////////////////////////////////////////////
+//
+// scenes
+//
+// Each screen of the game is a Scene. scenes.go() switches between them,
+// with a fade if you give it a time in ms.
+//
+static chili::Scenes scenes;
+
+static Point center() { return Point(screen.bounds.w / 2, screen.bounds.h / 2); }
+
+// scene changes, defined once both scenes exist
+static void go_title();
+static void go_play();
+
+struct Play;
+extern Play play;
+
+struct Title : chili::Scene {
+    chili::Menu menu{{
+        chili::Menu::action("PLAY", [] { go_play(); }),
+        chili::Menu::toggle("SOUND", save.data.sound, [] {
+            audio::set_sound(save.data.sound);
+            save.store();
+        }),
+    }};
+
+    void update(uint32_t dt) override { menu.update(scenes.pressed()); }
+
+    void render(uint32_t time) override {
+        Point c = center();
+        fx::big_text("MY GAME", Point(c.x, c.y - 30), 2, chili::theme.accent);
+        menu.render(Rect(c.x - 40, c.y - 10, 80, 20));
+        fx::text("A: SELECT", Point(c.x, c.y + 30), chili::theme.dim, TextAlign::top_center);
+    }
+} title;
+
+struct Play : chili::Scene {
+    bool paused = false;
+    chili::Menu pause_menu{{
+        chili::Menu::action("RESUME", [] { play.paused = false; }),
+        chili::Menu::action("QUIT", [] {
+            save.store();  // a checkpoint: the console can be switched off at any time
+            go_title();
+        }),
+    }};
+
+    Play() { pause_menu.on_back = [] { play.paused = false; }; }
+
+    void enter() override { paused = false; }
+
+    void update(uint32_t dt) override {
+        uint32_t pressed = scenes.pressed();
+        if(paused) {
+            pause_menu.update(pressed);
+            return;
+        }
+        if(pressed & Button::MENU) {
+            paused = true;
+            pause_menu.select(0);
+            chili::play_ui_sound(chili::UiSound::select);
+            return;
+        }
+        if(pressed & Button::A) {
+            save.data.presses++;
+            audio::play_sfx(sfx_blip);
+        }
+    }
+
+    void render(uint32_t time) override {
+        Point c = center();
+        fx::text("A pressed " + std::to_string(save.data.presses) + " times", Point(c.x, c.y - 8), chili::theme.text, TextAlign::top_center);
+        fx::text("MENU: PAUSE", Point(c.x, c.y + 8), chili::theme.dim, TextAlign::top_center);
+
+        if(paused) {
+            fx::dim(140);
+            fx::panel(Rect(c.x - 46, c.y - 26, 92, 52));
+            fx::big_text("PAUSED", Point(c.x, c.y - 12), 2, chili::theme.text);
+            pause_menu.render(Rect(c.x - 34, c.y, 68, 20));
+        }
+    }
+} play;
+
+static void go_title() { scenes.go(title, 150); }
+static void go_play() { scenes.go(play, 150); }
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -31,47 +137,42 @@ static void save_progress() {
 void init() {
     set_screen_mode(ScreenMode::hires);
 
-    // load the last save, if there is one
-    if(!read_save(save_data))
-        save_data = SaveData();
+    // load the last save (or defaults), and save again when the player quits
+    // to the home screen (from the system menu or by holding HOME)
+    save.load();
+    save.store_on_quit();
 
-    on_quit = save_progress;
-}
+    audio::init();
+    audio::set_sound(save.data.sound);
+    chili::ui_sound = ui_sound;
 
-///////////////////////////////////////////////////////////////////////////
-//
-// render(time)
-//
-// This function is called to perform rendering of the game. time is the 
-// amount if milliseconds elapsed since the start of your game
-//
-void render(uint32_t time) {
-
-    // clear the screen -- screen is a reference to the frame buffer and can be used to draw all things with the 32blit
-    screen.pen = Pen(0, 0, 0);
-    screen.clear();
-
-    // draw some text at the top of the screen
-    screen.alpha = 255;
-    screen.mask = nullptr;
-    screen.pen = Pen(255, 255, 255);
-    screen.rectangle(Rect(0, 0, 320, 14));
-    screen.pen = Pen(0, 0, 0);
-    screen.text("Hello 32blit!", minimal_font, Point(5, 4));
-
-    screen.pen = Pen(255, 255, 255);
-    screen.text("A pressed " + std::to_string(save_data.presses) + " times", minimal_font, Point(5, 24));
-    screen.text("Saved when you quit", minimal_font, Point(5, 36));
+    scenes.go(title);
 }
 
 ///////////////////////////////////////////////////////////////////////////
 //
 // update(time)
 //
-// This is called to update your game state. time is the 
-// amount if milliseconds elapsed since the start of your game
+// This is called to update your game state. time is the
+// amount of milliseconds elapsed since the start of your game
 //
 void update(uint32_t time) {
-    if(buttons.pressed & Button::A)
-        save_data.presses++;
+    scenes.update(time);
+    audio::update(time);
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+// render(time)
+//
+// This function is called to perform rendering of the game. time is the
+// amount of milliseconds elapsed since the start of your game
+//
+void render(uint32_t time) {
+    screen.alpha = 255;
+    screen.mask = nullptr;
+    screen.pen = Pen(0, 0, 0);
+    screen.clear();
+
+    scenes.render(time);
 }
