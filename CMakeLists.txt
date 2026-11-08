@@ -25,7 +25,7 @@ include(FetchContent)
 FetchContent_Declare(
   chili-game-sdk
   GIT_REPOSITORY https://github.com/chili-chip/chili-game-sdk.git
-  GIT_TAG 3dfc343d0f84ca585c19b5031c0bc47a06360263 # switch to v0.1.0 once tagged
+  GIT_TAG v0.1.1
 )
 FetchContent_MakeAvailable(chili-game-sdk)
 
