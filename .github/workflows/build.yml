@@ -133,7 +133,14 @@ jobs:
 
       - name: Pre-build Emscripten ports
         if: matrix.name == 'Emscripten'
-        run: embuilder.py build sdl2 sdl2-image-jpg sdl2-net
+        # GitHub archive downloads sometimes come back broken, so retry.
+        # Ports that already built stay in the cache between tries.
+        run: |
+          for i in 1 2 3 4; do
+            embuilder.py build sdl2 sdl2-image-jpg sdl2-net && exit 0
+            sleep 30
+          done
+          exit 1
 
       - name: Create Build Environment
         run: cmake -E make_directory ${{runner.workspace}}/main/build
@@ -141,7 +148,16 @@ jobs:
       - name: Configure CMake
         shell: bash
         working-directory: ${{runner.workspace}}/main/build
-        run: ${{matrix.cmake-prefix}} cmake $GITHUB_WORKSPACE/main -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCPACK_PACKAGE_FILE_NAME=${{env.RELEASE_FILE}} ${{matrix.cmake-args}}
+        # Configure downloads toolchain files from GitHub releases, which
+        # sometimes fail, so retry.
+        run: |
+          for i in 1 2 3; do
+            ${{matrix.cmake-prefix}} cmake $GITHUB_WORKSPACE/main -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCPACK_PACKAGE_FILE_NAME=${{env.RELEASE_FILE}} ${{matrix.cmake-args}} && exit 0
+            # drop the cache and any half-downloaded SDL zips so the next try downloads again
+            rm -f CMakeCache.txt "$(cygpath -u "$GITHUB_WORKSPACE" 2>/dev/null || echo "$GITHUB_WORKSPACE")"/32blit-sdk/vs/sdl/*.zip
+            sleep 30
+          done
+          exit 1
 
       - name: Build
         working-directory: ${{runner.workspace}}/main/build
