@@ -153,7 +153,8 @@ jobs:
         run: |
           for i in 1 2 3; do
             ${{matrix.cmake-prefix}} cmake $GITHUB_WORKSPACE/main -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCPACK_PACKAGE_FILE_NAME=${{env.RELEASE_FILE}} ${{matrix.cmake-args}} && exit 0
-            rm -f CMakeCache.txt
+            # drop the cache and any half-downloaded SDL zips so the next try downloads again
+            rm -f CMakeCache.txt "$(cygpath -u "$GITHUB_WORKSPACE" 2>/dev/null || echo "$GITHUB_WORKSPACE")"/32blit-sdk/vs/sdl/*.zip
             sleep 30
           done
           exit 1
