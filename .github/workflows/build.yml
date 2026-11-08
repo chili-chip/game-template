@@ -148,7 +148,15 @@ jobs:
       - name: Configure CMake
         shell: bash
         working-directory: ${{runner.workspace}}/main/build
-        run: ${{matrix.cmake-prefix}} cmake $GITHUB_WORKSPACE/main -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCPACK_PACKAGE_FILE_NAME=${{env.RELEASE_FILE}} ${{matrix.cmake-args}}
+        # Configure downloads toolchain files from GitHub releases, which
+        # sometimes fail, so retry.
+        run: |
+          for i in 1 2 3; do
+            ${{matrix.cmake-prefix}} cmake $GITHUB_WORKSPACE/main -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCPACK_PACKAGE_FILE_NAME=${{env.RELEASE_FILE}} ${{matrix.cmake-args}} && exit 0
+            rm -f CMakeCache.txt
+            sleep 30
+          done
+          exit 1
 
       - name: Build
         working-directory: ${{runner.workspace}}/main/build
